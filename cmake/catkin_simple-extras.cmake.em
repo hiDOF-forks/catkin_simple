@@ -167,18 +167,31 @@ macro(cs_export)
     "" "" "INCLUDE_DIRS;LIBRARIES;CATKIN_DEPENDS;DEPENDS;CFG_EXTRAS"
     ${ARGN})
 
-  set(${PROJECT_NAME}_CATKIN_RUN_DEPENDS)
-  foreach(dep ${${PROJECT_NAME}_RUN_DEPENDS})
+  set(${PROJECT_NAME}_CATKIN_BUILD_DEPENDS)
+  foreach(dep ${${PROJECT_NAME}_BUILD_DEPENDS})
     find_package(${dep} QUIET)
     if(${dep}_FOUND_CATKIN_PROJECT)
-      list(APPEND ${PROJECT_NAME}_CATKIN_RUN_DEPENDS ${dep})
+      list(APPEND ${PROJECT_NAME}_CATKIN_BUILD_DEPENDS ${dep})
+    endif()
+    # OK, this is actually a huge pain, but if we want to just specify our deps
+    # once in package.xml we have to trick catkin into allowing us to just
+    # specify build dependencies and not run dependencies. To do this we ensure
+    # that all build dependencies are also treated as run dependencies, if the
+    # user doesn't list them. To get to muck with these variables, we also have
+    # to call "catkin_package_xml()" before it gets called internally by
+    # "catkin_package" Sorry Dirk I know you don't approve of this :P.
+    list(FIND ${PROJECT_NAME}_RUN_DEPENDS ${dep} _index)
+    if(_index EQUAL -1)
+      # message("catkin_simple is adding ${depend_name} as a run_depend for you."
+      #         " If you don't want this to happen, switch to using full catkin.")
+      list(APPEND ${PROJECT_NAME}_RUN_DEPENDS ${dep})
     endif()
   endforeach()
 
   catkin_package(
     INCLUDE_DIRS ${${PROJECT_NAME}_LOCAL_INCLUDE_DIR} ${CS_PROJECT_INCLUDE_DIRS}
     LIBRARIES ${${PROJECT_NAME}_LIBRARIES} ${CS_PROJECT_LIBRARIES}
-    CATKIN_DEPENDS ${${PROJECT_NAME}_CATKIN_RUN_DEPENDS} ${CS_PROJECT_CATKIN_DEPENDS}
+    CATKIN_DEPENDS ${${PROJECT_NAME}_CATKIN_BUILD_DEPENDS} ${CS_PROJECT_CATKIN_DEPENDS}
     DEPENDS ${CS_PROJECT_DEPENDS}
     CFG_EXTRAS ${CS_PROJECT_CFG_EXTRAS}
   )
