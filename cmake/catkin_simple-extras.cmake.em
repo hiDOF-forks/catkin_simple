@@ -196,3 +196,9 @@ macro(cs_export)
     CFG_EXTRAS ${CS_PROJECT_CFG_EXTRAS}
   )
 endmacro()
+
+# When we call cs macros from subdirectories, we need to make sure we push the
+# relevant variables back up to the parent scope.
+macro(cs_export_subdirectory)
+  set(${PROJECT_NAME}_LIBRARIES ${${PROJECT_NAME}_LIBRARIES} PARENT_SCOPE)
+endmacro()
