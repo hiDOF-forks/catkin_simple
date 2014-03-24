@@ -146,7 +146,7 @@ macro(cs_add_library _target)
 endmacro()
 
 macro(cs_install)
-  if(${${PROJECT_NAME}_LOCAL_INCLUDE_DIR})
+  if(NOT "${${PROJECT_NAME}_LOCAL_INCLUDE_DIR}" STREQUAL "")
     # Install include directory
     install(DIRECTORY ${${PROJECT_NAME}_LOCAL_INCLUDE_DIR}/
       DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
