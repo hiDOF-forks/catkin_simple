@@ -99,6 +99,15 @@ macro(catkin_simple)
   endif()
 endmacro()
 
+macro(cs_install_targets _targets)
+  # Install targets (exec's and lib's)
+  install(TARGETS ${_targets} ${ARGN}
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+endmacro()
+
 macro(cs_add_executable _target)
   if(${_target} STREQUAL ${PROJECT_NAME}_package)
     message(WARNING "Could not create executable with name '${_target}' as '${PROJECT_NAME}_package' is reserved for the top level target name for this project.")
@@ -145,15 +154,6 @@ macro(cs_install)
       PATTERN ".svn" EXCLUDE
     )
   endif()
-endmacro()
-
-macro(cs_install_targets _targets)
-  # Install targets (exec's and lib's)
-  install(TARGETS ${_targets} ${ARGN}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
 endmacro()
 
 macro(cs_install_scripts)
