@@ -99,9 +99,13 @@ macro(catkin_simple)
   endif()
 endmacro()
 
-macro(cs_add_targets_to_package)
-  add_dependencies(${PROJECT_NAME}_package ${ARGN})
-  list(APPEND ${PROJECT_NAME}_TARGETS ${ARGN})
+macro(cs_install_targets _targets)
+  # Install targets (exec's and lib's)
+  install(TARGETS ${_targets} ${ARGN}
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
 endmacro()
 
 macro(cs_add_executable _target)
@@ -118,7 +122,7 @@ macro(cs_add_executable _target)
       add_dependencies(${_target} ${${PROJECT_NAME}_CATKIN_BUILD_DEPENDS_EXPORTED_TARGETS})
     endif()
   endif()
-  cs_add_targets_to_package(${_target})
+  cs_install_targets(${_target})
 endmacro()
 
 macro(cs_add_library _target)
@@ -138,16 +142,10 @@ macro(cs_add_library _target)
   if(NOT cs_add_library_NO_AUTO_EXPORT)
     list(APPEND ${PROJECT_NAME}_LIBRARIES ${_target})
   endif()
-  cs_add_targets_to_package(${_target})
+  cs_install_targets(${_target})
 endmacro()
 
 macro(cs_install)
-  # Install targets (exec's and lib's)
-  install(TARGETS ${${PROJECT_NAME}_TARGETS} ${ARGN}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
   if(${${PROJECT_NAME}_LOCAL_INCLUDE_DIR})
     # Install include directory
     install(DIRECTORY ${${PROJECT_NAME}_LOCAL_INCLUDE_DIR}/
